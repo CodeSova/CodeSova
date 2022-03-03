@@ -1,4 +1,4 @@
-- 👋 Hi, I’m @CodeSova
+- 👋 Hi, I’m @CodeSov but you can call me Sova
 - 👀 I’m interested in game developmant
 - 🌱 I’m currently learning JS and Python
 
