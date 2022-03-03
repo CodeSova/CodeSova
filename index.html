@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="main.css">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Snake Game</title>
+</head>
+<body>
+    <p id="Points">Holz</p>
+
+    <canvas id="canvas" width="600" height="600"></canvas>
+    <script>
+
+        let canavs = document.getElementById('canvas');
+        let ctx = canavs.getContext('2d');
+        let rows = prompt("Wie Groß soll dein Spielfeld sein? (Nicht unter 10) ");
+        let cols = rows;
+        let snake = [];
+        let food;
+        let cellWidth = canavs.width / cols;
+        let cellHeight = canavs.height / rows;
+        let direction = "";
+        let foodCollected = false;
+        let speed;
+        
+        calcSpeed();
+        placeFood();
+        placeSnake();
+        draw();
+
+        setInterval(gameLoop, speed);
+        document.addEventListener("keydown", keyDown);
+
+        function draw(){
+            ctx.fillStyle = 'black';
+            ctx.fillRect(0, 0, canavs.width, canavs.height);
+            ctx.fillStyle = 'white';
+            
+            snake.forEach(part => add(part.x, part.y));
+
+            ctx.fillStyle = ' lightgreen' ;
+            add(food.x, food.y);
+
+            requestAnimationFrame(draw);
+        }
+
+        function testGameOver(){
+
+            let firstPart = snake[0];
+            let otherParts = snake.slice(1);
+            let dubnlicatPart = otherParts.find(part => part.x == firstPart.x && part.y == firstPart.y);
+            let higehScore = snake.length;
+            let maxPlayfeld = (rows*cols);
+
+            if (snake[0].x < 0 ||
+                snake[0].x > cols -1 ||
+                snake[0].y < 0||
+                snake[0].y > rows -1||
+                dubnlicatPart
+            ) {
+                placeFood();
+                placeSnake();
+                direction = "";
+                alert("Deine Schlange ist " + higehScore + " Lang geworden");
+                document.getElementById('Points').innerHTML= 'Holz';
+                speed = 300;
+            }
+
+            if (maxPlayfeld == higehScore) {
+                placeFood();
+                placeSnake();
+                direction = "";
+                alert("Cool Gewonnen!!!!");
+                speed = 300;
+            }
+                    
+        }
+
+        function placeFood(){
+            let randomX = Math.floor( Math.random() * cols );
+            let randomY = Math.floor( Math.random() * rows );
+
+            food = {
+                x: randomX,
+                y: randomY
+            }
+        }
+
+        function placeSnake(){
+            let randomX = Math.floor( Math.random() * cols );
+            let randomY = Math.floor( Math.random() * rows );
+
+            snake=[{
+                x: randomX,
+                y: randomY
+            }]
+        }
+
+        function add(x, y){
+            ctx.fillRect(x*cellWidth, y*cellHeight, cellWidth -1, cellHeight -1);
+        }
+
+        function shiftSnake(){
+            for (let i = snake.length-1; i > 0; i--) {
+                const part = snake[i];
+                const lastPart = snake[i-1];
+                part.x = lastPart.x;
+                part.y = lastPart.y;
+            }
+        }
+
+        function points() {
+            let length = snake.length;
+
+            if (length < 10) {
+                document.getElementById('Points').innerHTML= 'Holz';
+            } else {if (length < 20) {
+                document.getElementById('Points').innerHTML= 'Bronze';
+            } else {if (length < 30) {
+                document.getElementById('Points').innerHTML= 'Silber';
+            } else {if (length < 40) {
+                document.getElementById('Points').innerHTML= 'Gold';
+            } else {if (length < 50) {
+                document.getElementById('Points').innerHTML= 'Diamant';
+            } else {
+                document.getElementById('Points').innerHTML= 'Plantin';
+            }   }   }   }   }
+        }
+
+        function calcSpeed() {
+            let length = snake.length
+
+            if (length<=5) {
+                speed = 300;
+            } else { if (length <= 10) {
+                speed = 280;
+            } else { if (length <= 15) {
+                speed = 260;
+            } else { if (length <= 20) {
+                speed = 240;
+            } else { if (length <= 25) {
+                speed = 220;
+            } else { if (length <= 30) {
+                speed = 200;
+            } else { if (length <= 35) {
+                speed = 180;
+            } else { if (length <= 40) {
+                speed = 160;
+            } else { if (length <= 45) {
+                speed = 140;
+            } else { if (length <= 50) {
+                speed = 120;
+            } else {
+                speed = 100
+            }   }   }   }   }    }   }    }   }    }
+        }
+
+        function gameLoop(){
+
+            testGameOver();
+            consoleOut();
+
+            if (foodCollected == true) {
+                snake = [{
+                  x: snake[0].x,
+                  y: snake[0].y
+                },...snake];
+
+                points();
+                calcSpeed();
+
+                foodCollected = false;
+            }
+
+            shiftSnake();
+
+            if (direction == "LEFT") {
+                snake[0].x--;
+            }
+
+            if (direction == "RIGHT") {
+                snake[0].x++;
+            }
+
+            if (direction == "UP") {
+                snake[0].y--;
+            }
+
+            if (direction == "DOWN") {
+                snake[0].y++;
+            }
+
+            if (snake[0].x == food.x
+                && snake[0].y == food.y) {
+                    foodCollected = true;
+                    placeFood();
+            }
+        }
+
+        function keyDown(e){
+            if (e.keyCode == 37) {
+                direction = "LEFT"
+            }
+            if (e.keyCode == 38) {
+                direction = "UP"
+            }
+            if (e.keyCode == 39) {
+                direction = "RIGHT"
+            }
+            if (e.keyCode == 40) {
+                direction = "DOWN"
+            }
+            if (e.keyCode == 77) {
+                window.location.href = window.location.href;
+            }
+        }
+
+        function consoleOut() {
+            console.log("V = " + speed);
+            console.log(direction);
+            console.log(snake.length);
+        }
+    </script>
+</body>
+</html>
